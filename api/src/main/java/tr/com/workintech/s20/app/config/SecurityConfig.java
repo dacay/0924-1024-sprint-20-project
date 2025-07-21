@@ -14,9 +14,6 @@ import tr.com.workintech.s20.app.filter.JwtFilter;
 @Configuration
 public class SecurityConfig {
 
-  @Autowired
-  private JwtFilter jwtFilter;
-
   @Bean
   public PasswordEncoder passwordEncoder() {
 
@@ -34,7 +31,6 @@ public class SecurityConfig {
 
                 auth.anyRequest().authenticated();
             })
-            .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
   }
 }

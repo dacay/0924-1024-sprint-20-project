@@ -27,8 +27,15 @@ public class JwtFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
     // Check if we need authentication
-    if (request.getServletPath().startsWith("/auth"))
+    if (request.getServletPath().startsWith("/auth/")) {
+
+      log.debug("Skipping JWT filter for auth path...");
+
+      // Do the rest of filter
+      filterChain.doFilter(request, response);
+
       return;
+    }
 
     // Get authorization header
     String authHeader = request.getHeader("Authorization");
@@ -57,5 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {
     User user = jwtService.verify(token);
 
     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
+
+    // Do the rest of filter
+    filterChain.doFilter(request, response);
   }
 }
