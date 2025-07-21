@@ -13,9 +13,17 @@ import org.springframework.stereotype.Service;
 import tr.com.workintech.s20.app.entity.User;
 import tr.com.workintech.s20.app.repository.UserRepository;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.util.Date;
+
 @Service
 @Slf4j
 public class JwtServiceImpl implements JwtService {
+
+  private static final String AUDIENCE = "s20app.workintech.com.tr";
+  private static final String ISSUER = "s20app.workintech.com.tr";
 
   @Value("${jwt.secret}")
   private String jwtSecret;
@@ -31,7 +39,11 @@ public class JwtServiceImpl implements JwtService {
 
     Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
 
-    this.jwtVerifier = JWT.require(algorithm).build();
+    this.jwtVerifier = JWT
+            .require(algorithm)
+            .withAudience(AUDIENCE)
+            .withIssuer(ISSUER)
+            .build();
 
     return this.jwtVerifier;
   }
@@ -51,7 +63,7 @@ public class JwtServiceImpl implements JwtService {
   }
 
   @Override
-  public String create(User user) throws JWTCreationException {
+  public String sign(User user) throws JWTCreationException {
 
     log.debug("Creating token...");
 
@@ -60,6 +72,10 @@ public class JwtServiceImpl implements JwtService {
     return JWT
             .create()
             .withSubject(Long.toString(user.getId()))
+            .withExpiresAt(Instant.now().plus(Duration.ofDays(3)))
+            .withIssuedAt(Instant.now())
+            .withIssuer(ISSUER)
+            .withAudience(AUDIENCE)
             .withClaim("email", user.getEmail())
             .sign(algorithm);
   }

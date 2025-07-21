@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tr.com.workintech.s20.app.entity.User;
+import tr.com.workintech.s20.app.exception.AuthenticationException;
 import tr.com.workintech.s20.app.exception.UserAlreadyExistsException;
 import tr.com.workintech.s20.app.repository.UserRepository;
 
@@ -16,6 +17,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -56,8 +60,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(String email, String password) {
-        return "";
+    public String login(String email, String password) throws AuthenticationException {
+
+        log.debug("Checking if a user with email '{}' exists...", email);
+
+        Optional<User> existingUser = repository.findByEmail(email);
+
+        // Check if user exists
+        if (!existingUser.isPresent()) {
+
+            log.error("User does not exist with email '{}'.", email);
+
+            throw new AuthenticationException("User does not exist");
+        }
+
+        boolean passwordsMatch = this.passwordEncoder.matches(password, existingUser.get().getPassword());
+
+        if (!passwordsMatch) {
+
+            log.error("User passwords do not match.");
+
+            throw new AuthenticationException("User passwords do not match.");
+        }
+
+        log.debug("User passwords match.");
+
+        String token = this.jwtService.sign(existingUser.get());
+
+        log.debug("Signed token for user '{}': {}", email, token);
+
+        return token;
     }
 
     @Override

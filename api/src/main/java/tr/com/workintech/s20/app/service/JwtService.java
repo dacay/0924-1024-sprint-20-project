@@ -8,5 +8,5 @@ public interface JwtService {
 
   User verify(String token) throws JWTVerificationException;
 
-  String create(User user) throws JWTCreationException;
+  String sign(User user) throws JWTCreationException;
 }
