@@ -16,3 +16,18 @@ export const login = async (email, password) => {
 
     return token;
 };
+
+export const getMovies = async () => {
+
+    const token = localStorage.getItem('token');
+
+    const response = await instance.get('/movies', {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const { movies } = response.data;
+
+    return movies;
+};
