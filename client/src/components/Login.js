@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
+
 import { useHistory, Link } from 'react-router-dom';
+import { login } from '../utils/axios';
+import { toast } from 'react-toastify';
 
 const Login = () => {
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
   const history = useHistory();
 
   const handleChange = (e) => {
@@ -16,10 +21,33 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
-    // Empty handler for submit event
-    console.log('Login form submitted:', formData);
+
+    console.debug('Login form submitted:', formData);
+
+    try {
+     
+      const token = await login(formData.email, formData.password);
+
+      console.debug('Login successful:', token);
+
+      localStorage.setItem('token', token);
+
+      history.push('/');
+      
+    } catch(err) {
+
+      toast.error('Login failed');
+
+      console.error('Login failed:', err);
+
+      setFormData({
+        ...formData,
+        password: ''
+      });
+    }
   };
 
   return (

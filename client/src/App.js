@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+
 import './App.css';
 
 // Components
@@ -18,6 +20,7 @@ function App() {
           <PrivateRoute exact path="/" component={Home} />
         </Switch>
       </div>
+      <ToastContainer />
     </Router>
   );
 }
