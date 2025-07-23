@@ -23,7 +23,7 @@ public interface MovieService {
 
   List<Category> listCategories();
 
-  void addCategory(String name);
+  Category addCategory(String name);
 
   void renameCategory(String oldName, String newName);
 

@@ -82,12 +82,12 @@ public class MovieServiceImpl implements MovieService {
   }
 
   @Override
-  public void addCategory(String name) {
+  public Category addCategory(String name) {
 
     Category category = new Category();
     category.setName(name);
 
-    this.categoryRepository.save(category);
+    return this.categoryRepository.save(category);
   }
 
   @Override
