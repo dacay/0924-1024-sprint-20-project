@@ -3,6 +3,7 @@ package tr.com.workintech.s20.app.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -43,7 +44,9 @@ public class SecurityConfig {
 
                 auth.requestMatchers("/auth/**").permitAll();
 
-                auth.anyRequest().authenticated();
+                auth.requestMatchers(HttpMethod.OPTIONS).permitAll();
+                auth.requestMatchers(HttpMethod.GET).authenticated();
+                auth.requestMatchers(HttpMethod.POST).authenticated();
             })
             .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

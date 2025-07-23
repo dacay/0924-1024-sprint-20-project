@@ -1,31 +1,42 @@
 package tr.com.workintech.s20.app.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tr.com.workintech.s20.app.dto.AddMovieRequest;
 import tr.com.workintech.s20.app.dto.AddMovieResponse;
 import tr.com.workintech.s20.app.dto.ListMoviesResponse;
 import tr.com.workintech.s20.app.entity.Movie;
+import tr.com.workintech.s20.app.entity.User;
 import tr.com.workintech.s20.app.service.MovieService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/movies")
+@Slf4j
 public class MovieController {
 
   @Autowired
   private MovieService movieService;
 
   @GetMapping({"/", ""})
-  public ListMoviesResponse listMovies() {
+  @CrossOrigin
+  // Bu sekilde, giris yapmis kullanicinin kendisine erisebiliyoruz
+  // JwtAuthentication'da getPrincipal'da User dondugumuz icin @AuthenticationPrincipal ile
+  // giris yapmis kullanicinin User'ini alabiliriz
+  // Eger uzerinde ekstra degerli bilgiler varsa, annotation olmadan JwtAuthentication objesi de alabilir
+  public ListMoviesResponse listMovies(@AuthenticationPrincipal User user) {
+
+    log.debug("User: {}", user);
 
     List<Movie> movies = this.movieService.listMovies();
 
     return new ListMoviesResponse(movies);
   }
 
-  @PostMapping("/")
+  @PostMapping({"/", ""})
   public AddMovieResponse addMovie(@RequestBody AddMovieRequest request) {
 
     Movie movie = new Movie();

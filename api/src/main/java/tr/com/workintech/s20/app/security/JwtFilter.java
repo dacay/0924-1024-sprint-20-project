@@ -30,7 +30,13 @@ public class JwtFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getServletPath();
-    
+
+    log.debug("Request method is {}.", request.getMethod());
+
+    if (request.getMethod().equals("OPTIONS")) {
+      return true;
+    }
+
     // Skip auth paths
     if (path.startsWith("/auth/")) {
       return true;
