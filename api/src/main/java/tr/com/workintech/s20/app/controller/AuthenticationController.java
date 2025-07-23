@@ -30,6 +30,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin
     public LoginResponse login(@RequestBody LoginRequest request) throws AuthenticationException {
 
         log.debug("Received login request: {}", request);
